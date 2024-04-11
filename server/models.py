@@ -38,8 +38,7 @@ class Pizza(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    price = db.Column(db.Float, nullable=False)
+    ingredients = db.Column(db.Text, nullable=True)
 
     restaurant_pizzas = db.relationship('RestaurantPizza', back_populates='pizza', cascade='all, delete-orphan')
     restaurants = association_proxy('restaurant_pizzas', 'restaurants',
@@ -52,6 +51,7 @@ class RestaurantPizza(db.Model, SerializerMixin):
     serialize_rules = ('-pizza.restaurant_pizzas','-restaurant.restaurant_pizzas',)
 
     id = db.Column(db.Integer, primary_key=True)
+    price = db.Column(db.Float, nullable=False)
 
     restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurants.id'), nullable=False)
     pizza_id = db.Column(db.Integer, db.ForeignKey('pizzas.id'), nullable=False)

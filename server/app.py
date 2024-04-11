@@ -20,19 +20,13 @@ def get_restaurants():
     restaurants = [restaurant.to_dict() for restaurant in Restaurant.query.all()]
     return make_response(jsonify(restaurants), 200)
 
-@app.route('/restaurants/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/restaurants/<int:id>', methods=['GET', 'DELETE'])
 def get_or_update_or_delete_restaurant(id):
     restaurant = Restaurant.query.get(id)
     if not restaurant:
         return make_response(jsonify({'error': 'Restaurant not found'}), 404)
     
     if request.method == 'GET':
-        return make_response(jsonify(restaurant.to_dict()), 200)
-    
-    elif request.method == 'PATCH':
-        for attr, value in request.form.items():
-            setattr(restaurant, attr, value)
-        db.session.commit()
         return make_response(jsonify(restaurant.to_dict()), 200)
     
     elif request.method == 'DELETE':
@@ -45,25 +39,28 @@ def get_pizzas():
     pizzas = [pizza.to_dict() for pizza in Pizza.query.all()]
     return make_response(jsonify(pizzas), 200)
 
+
 @app.route('/restaurant_pizzas', methods=['POST'])
 def create_restaurant_pizza():
-    data = request.json
+    data = request.get_json()
     price = data.get('price')
     pizza_id = data.get('pizza_id')
     restaurant_id = data.get('restaurant_id')
 
-    if not all([price, pizza_id, restaurant_id]):
-        return make_response(jsonify({'errors': ['Missing required fields']}), 400)
+    if not price or not pizza_id or not restaurant_id:
+        return make_response(jsonify({"errors": ["Missing required data"]}), 400)
 
     restaurant_pizza = RestaurantPizza(price=price, pizza_id=pizza_id, restaurant_id=restaurant_id)
-    db.session.add(restaurant_pizza)
-    db.session.commit()
 
-    pizza = Pizza.query.get(pizza_id)
-    if pizza:
-        return make_response(jsonify(pizza.to_dict()), 201)
-    else:
-        return make_response(jsonify({'errors': ['Pizza not found']}), 404)
+    try:
+        db.session.add(restaurant_pizza)
+        db.session.commit()
+        return make_response(jsonify(restaurant_pizza.pizza.to_dict()), 201)
+    except Exception as e:
+        return make_response(jsonify({"errors": [str(e)]}), 400)
+
+
+    
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

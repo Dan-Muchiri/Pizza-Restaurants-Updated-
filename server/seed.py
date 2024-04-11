@@ -16,8 +16,8 @@ def seed():
         db.session.add(pizza_hut)
 
         # Create some pizzas
-        cheese_pizza = Pizza(name="Cheese", description="Dough, Tomato Sauce, Cheese", price=10.99)
-        pepperoni_pizza = Pizza(name="Pepperoni", description="Dough, Tomato Sauce, Cheese, Pepperoni", price=12.99)
+        cheese_pizza = Pizza(name="Cheese", ingredients="Dough, Tomato Sauce, Cheese")
+        pepperoni_pizza = Pizza(name="Pepperoni", ingredients="Dough, Tomato Sauce, Cheese, Pepperoni")
         
         db.session.add(cheese_pizza)
         db.session.add(pepperoni_pizza)
@@ -26,17 +26,11 @@ def seed():
         db.session.commit()
 
         # Create RestaurantPizza objects to associate pizzas with restaurants
-        dominion_pizza_cheese = RestaurantPizza(restaurant=dominion_pizza, pizza=cheese_pizza)
-        dominion_pizza_pepperoni = RestaurantPizza(restaurant=dominion_pizza, pizza=pepperoni_pizza)
+        dominion_pizza_cheese = RestaurantPizza(restaurant=dominion_pizza, pizza=cheese_pizza, price=10.99)
+        dominion_pizza_pepperoni = RestaurantPizza(restaurant=dominion_pizza, pizza=pepperoni_pizza, price=12.99)
         
-        pizza_hut_cheese = RestaurantPizza(restaurant=pizza_hut, pizza=cheese_pizza)
-        pizza_hut_pepperoni = RestaurantPizza(restaurant=pizza_hut, pizza=pepperoni_pizza)
-        
-        # Set the price attribute for RestaurantPizza objects
-        dominion_pizza_cheese.price = 10.99
-        dominion_pizza_pepperoni.price = 12.99
-        pizza_hut_cheese.price = 11.99
-        pizza_hut_pepperoni.price = 13.99
+        pizza_hut_cheese = RestaurantPizza(restaurant=pizza_hut, pizza=cheese_pizza, price=11.99)
+        pizza_hut_pepperoni = RestaurantPizza(restaurant=pizza_hut, pizza=pepperoni_pizza, price=13.99)
         
         # Add RestaurantPizza objects to the session
         db.session.add(dominion_pizza_cheese)
